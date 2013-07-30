@@ -386,6 +386,9 @@ ClientNode::Connect(status_t status,
 	if (status != B_OK)
 		return;
 
+	media_node_id id;
+	FindLatencyFor(dst, &fDownstreamLatency, &id);
+
 	fOwner->SetFormat(format);
 
 	JackPort* port;
@@ -404,9 +407,6 @@ ClientNode::Connect(status_t status,
 			break;
 		}
 	}
-
-	media_node_id id;
-	FindLatencyFor(dst, &fDownstreamLatency, &id);
 }
 
 

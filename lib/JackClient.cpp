@@ -24,10 +24,8 @@ JackClient::ProcessThread(void* cookie)
 	while (1) {
 		JackClient* client = (JackClient*) cookie;
 
-		if (client->CountPorts() == 0
-			|| !client->PortsReady()) {
-
-		} else  {
+		if (client->CountPorts() != 0
+			|| client->PortsReady()) {
 			printf("The client is starting now\n");
 			client->ActivateNode();
 			return 0;
@@ -216,12 +214,15 @@ JackClient::RegisterPort(const char *port_name,
 {
 	unsigned long size;
 
-	if (strcmp(port_type, JACK_DEFAULT_AUDIO_TYPE) == 0 ||
-		strcmp(port_type, JACK_DEFAULT_MIDI_TYPE) == 0) {
-		size = fFormat.u.raw_audio.buffer_size;
-	} else {
+	if (buffer_size == 0) {
+		if (strcmp(port_type, JACK_DEFAULT_AUDIO_TYPE) == 0) {
+			size = fFormat.u.raw_audio.buffer_size;
+		} else if (strcmp(port_type, JACK_DEFAULT_MIDI_TYPE) == 0) {
+			// not supported atm
+			return NULL;
+		}
+	} else
 		size = buffer_size;
-	}
 
 	JackPort* port = new JackPort(port_name, port_type,
 		flags, size, this);
@@ -478,6 +479,7 @@ JackClient::_LiveNodes(int32* live_count)
 {
 	BMediaRoster* roster = BMediaRoster::Roster();
 
+	// TODO set autodeleter to live_nodes
 	live_node_info* live_nodes = (live_node_info*) malloc(100);
 	int32 count;
 
@@ -519,7 +521,7 @@ JackClient::FindNativeNode(const char* jack_client)
 		fRoster->GetAudioMixer(&ret);
 
 	} else {
-		// This is not a banal case, let's find the native node
+		// This is not a banal case, find the native node
 		int32 live_count;
 		live_node_info* nativeNodes = _LiveNodes(&live_count);
 
