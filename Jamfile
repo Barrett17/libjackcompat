@@ -1,0 +1,67 @@
+SubDir TOP ;
+
+SEARCH_SOURCE += [ FDirName $(TOP) headers ] ;
+#SEARCH_SOURCE += [ FDirName $(TOP) headers private ] ;
+SEARCH_SOURCE += [ FDirName $(TOP) lib ] ;
+SEARCH_SOURCE += [ FDirName $(TOP) clients ] ;
+
+# Compatibility layer
+
+AddOn libjackcompat.so :
+	jack.cpp
+	midiport.c
+	ringbuffer.c
+	session.c
+	transport.c
+
+	ClientNode.cpp
+	JackClient.cpp
+	JackPort.cpp
+
+	: be media midi2 $(TARGET_LIBSTDC++)
+;
+
+InstallBin $(JACKCOMPAT_DIRECTORY) : libjackcompat.so ;
+UninstallTarget $(JACKCOMPAT_DIRECTORY) ;
+
+# Test clients
+
+Application wjack_simple_client :
+	simple_client.c
+
+	:  $(TARGET_LIBSTDC++) libjackcompat.so
+;
+
+Application wjack_capture_client :
+	 capture_client.c
+
+	:  $(TARGET_LIBSTDC++) libjackcompat.so
+	sndfile
+;
+
+Application wjack_iodelay :
+	iodelay.cpp
+
+	:  $(TARGET_LIBSTDC++) libjackcompat.so
+;
+
+Application wjack_wait :
+	wait.c
+
+	:  $(TARGET_LIBSTDC++) libjackcompat.so
+;
+
+#Application wjack_control :
+#	control.c
+
+#	:  $(TARGET_LIBSTDC++) libjackcompat.so
+#;
+
+#Application wjack_connect :
+#	connect.c
+
+#	:  $(TARGET_LIBSTDC++) libjackcompat.so
+#;
+
+InstallBin $(COMMON_BIN_DIRECTORY) : wjack_simple_client wjack_capture_client
+ wjack_iodelay wjack_wait ;
