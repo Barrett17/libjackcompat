@@ -1,3 +1,7 @@
+/*
+ * Copyright 2013 Dario Casalinuovo. All rights reserved.
+ * Distributed under the terms of the GPL License.
+ */
 #ifndef _CLIENT_NODE_H
 #define _CLIENT_NODE_H
 

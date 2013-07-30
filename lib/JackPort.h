@@ -1,3 +1,7 @@
+/*
+ * Copyright 2013 Dario Casalinuovo. All rights reserved.
+ * Distributed under the terms of the GPL License.
+ */
 #ifndef _HAIKU_JACKPORT_H_
 #define _HAIKU_JACKPORT_H_
 

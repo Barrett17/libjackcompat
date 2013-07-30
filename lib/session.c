@@ -1,3 +1,7 @@
+/*
+ * Copyright 2013 Dario Casalinuovo. All rights reserved.
+ * Distributed under the terms of the GPL License.
+ */
 #include "jack/session.h"
 
 void jack_session_event_free (jack_session_event_t *event)
