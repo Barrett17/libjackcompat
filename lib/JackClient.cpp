@@ -138,13 +138,16 @@ JackClient::Close()
 	if (fActivated)
 		DeActivate();
 
-	if (fRoster->UnregisterNode(fClientNode) != B_OK)
-		return -1;
+	if (fClientNode != NULL
+		&& fRoster->UnregisterNode(fClientNode) == B_OK) {
 
-	delete fClientNode;
+		delete fClientNode;
 
-	fOpen = false;
-	return 0;
+		fOpen = false;
+		return 0;
+	}
+
+	return -1;
 }
 
 
