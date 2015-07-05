@@ -19,6 +19,7 @@
 
 #include "JackClient.h"
 
+#include <Autolock.h>
 #include <BufferGroup.h>
 #include <MediaDefs.h>
 #include <MediaEventLooper.h>
@@ -38,6 +39,8 @@ JackClient::ProcessThread(void* cookie)
 {
 	while (1) {
 		JackClient* client = (JackClient*) cookie;
+		if (client->CountPorts() == 0)
+			snooze(10000);
 
 		if (client->CountPorts() != 0
 			|| client->PortsReady()) {
@@ -60,6 +63,8 @@ JackClient::JackClient(const char* client_name,
 	fInputPorts = new JackPortList(true);
 	fOutputPorts = new JackPortList(true);
 
+	fLock = new BLocker("JackClient lock");
+
 	fRoster = BMediaRoster::Roster();
 	fClientNode = NULL;
 	fActivated = false;
@@ -69,14 +74,15 @@ JackClient::JackClient(const char* client_name,
 
 JackClient::~JackClient()
 {
-	delete fInputPorts;
-	delete fOutputPorts;
-
 	if (fActivated)
 		DeActivate();
 
 	if (fOpen)
 		Close();
+
+	delete fInputPorts;
+	delete fOutputPorts;
+	delete fLock;
 }
 
 
@@ -104,6 +110,8 @@ JackClient::SampleRate() const
 int
 JackClient::Open()
 {
+	BAutolock _(fLock);
+
 	printf("JackClient::Open\n");
 
 	if (fClientNode != NULL)
@@ -133,20 +141,19 @@ JackClient::Open()
 int
 JackClient::Close()
 {
-	printf("JackClient::Close\n");
+	BAutolock _(fLock);
 
-	if (fActivated)
-		DeActivate();
+	printf("JackClient::Close\n");
 
 	if (fClientNode != NULL
 		&& fRoster->UnregisterNode(fClientNode) == B_OK) {
 
 		delete fClientNode;
+		fClientNode = NULL;
 
 		fOpen = false;
 		return 0;
 	}
-
 	return -1;
 }
 
@@ -155,6 +162,8 @@ JackClient::Close()
 status_t
 JackClient::ActivateNode()
 {
+	BAutolock _(fLock);
+
 	printf("JackClient::ActivateNode\n");
 
 	if (!fClientNode->TimeSource()->IsRunning()) {
@@ -177,6 +186,8 @@ JackClient::ActivateNode()
 int
 JackClient::Activate()
 {
+	BAutolock _(fLock);
+
 	printf("JackClient::Activate\n");
 	if (!fOpen)
 		return -1;
@@ -200,8 +211,10 @@ JackClient::Activate()
 int
 JackClient::DeActivate()
 {
+	BAutolock _(fLock);
+
 	printf("JackClient::DeActivate\n");
-	if (fOpen && fActivated == false)
+	if (fActivated == false)
 		return 0;
 
 	status_t err = fRoster->StopNode(fClientNode->Node(), 0, true);
@@ -230,6 +243,8 @@ JackClient::RegisterPort(const char *port_name,
 	const char *port_type, unsigned long flags,
 	unsigned long buffer_size)
 {
+	BAutolock _(fLock);
+
 	unsigned long size;
 
 	if (buffer_size == 0) {
@@ -340,6 +355,8 @@ const char**
 JackClient::GetPorts(const char *port_name_pattern, 
 	const char *type_name_pattern, unsigned long flags)
 {
+	BAutolock _(fLock);
+
 	const char** jack_ports;
 	jack_ports = (const char**)malloc(100);
 
@@ -376,6 +393,10 @@ JackClient::GetPorts(const char *port_name_pattern,
 status_t
 JackClient::Process(jack_nframes_t size)
 {
+	BAutolock _(fLock);
+	if (fOpen == false || fActivated == false)
+		return B_ERROR;
+
 	fProcessCallback.callback(size, fProcessCallback.arg);
 	return B_OK;
 }
@@ -384,6 +405,8 @@ JackClient::Process(jack_nframes_t size)
 int
 JackClient::ConnectPorts(const char* source, const char* destination)
 {
+	BAutolock _(fLock);
+
 	media_node sourceNode = FindNativeNode(source);
 	media_node destNode = FindNativeNode(destination);
 
@@ -454,6 +477,8 @@ JackClient::IsEqual(JackClient* client) const
 bool
 JackClient::PortsReady() const
 {
+	BAutolock _(fLock);
+
 	if(!fOpen && !fActivated)
 		return false;
 

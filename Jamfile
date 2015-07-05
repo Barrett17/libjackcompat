@@ -32,12 +32,12 @@ Application wjack_simple_client :
 	:  $(TARGET_LIBSTDC++) libjackcompat.so
 ;
 
-Application wjack_capture_client :
-	 capture_client.c
+#Application wjack_capture_client :
+#	 capture_client.c
 
-	:  $(TARGET_LIBSTDC++) libjackcompat.so
-	sndfile
-;
+#	:  $(TARGET_LIBSTDC++) libjackcompat.so
+#	sndfile
+#;
 
 Application wjack_iodelay :
 	iodelay.cpp

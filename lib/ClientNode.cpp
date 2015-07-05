@@ -36,11 +36,11 @@ ClientNode::ClientNode(const char* name, JackClient* owner)
 	BMediaNode(name),
 	//BBufferConsumer(B_MEDIA_RAW_AUDIO),
 	BBufferProducer(B_MEDIA_RAW_AUDIO),
-	BMediaEventLooper()
+	BMediaEventLooper(),
+	fOwner(owner),
+	fTime(0),
+	fFramesSent(0)
 {
-	fOwner = owner;
-	fTime = 0;
-	fFramesSent = 0;
 }
 
 
@@ -76,7 +76,7 @@ ClientNode::NodeRegistered()
 	fFormat.u.raw_audio = media_raw_audio_format::wildcard;
 
 	fFormat.u.raw_audio.channel_count = 1;
-	fFormat.u.raw_audio.frame_rate = 44100.0;
+	fFormat.u.raw_audio.frame_rate = WRAPPER_PREFERRED_FRAMERATE;
 	fFormat.u.raw_audio.byte_order
 		= (B_HOST_IS_BENDIAN) ? B_MEDIA_BIG_ENDIAN : B_MEDIA_LITTLE_ENDIAN;
 
@@ -119,11 +119,11 @@ ClientNode::AcceptFormat(const media_destination& dst,
 	if (format->type != B_MEDIA_RAW_AUDIO)
 		return B_MEDIA_BAD_FORMAT;
 
-	if (format->u.raw_audio.format != media_raw_audio_format::B_AUDIO_INT)
+	if (format->u.raw_audio.format != media_raw_audio_format::WRAPPER_PREFERRED_FORMAT)
 		return B_MEDIA_BAD_FORMAT;
 
 	// TODO finish it
-	format->u.raw_audio.format = media_raw_audio_format::B_AUDIO_INT;
+	format->u.raw_audio.format = media_raw_audio_format::WRAPPER_PREFERRED_FORMAT;
 	return B_OK;
 }
 
@@ -142,8 +142,8 @@ ClientNode::GetNextInput(int32 *cookie,	media_input *input)
 	if (port == NULL)
 		return B_BAD_INDEX;
 
-	//printf("%s %d\n", port->Name(), *cookie);
-	//*input = port->Input();
+	// printf("%s %d\n", port->Name(), *cookie);
+	// *input = port->Input();
 	*cookie++;
 
 	return B_OK;
@@ -293,7 +293,7 @@ void
 ClientNode::LateNoticeReceived(const media_source &src,
 	bigtime_t late,	bigtime_t when)
 {
-	printf("ClientNode::LateNoticeReceived %d\n", src.id);
+	printf("ClientNode::LateNoticeReceived %d\n", (int)src.id);
 
 	// NOTE enable when this become also a consumer
 	//NotifyLateProducer(src, late, when);
@@ -303,8 +303,6 @@ ClientNode::LateNoticeReceived(const media_source &src,
 status_t
 ClientNode::GetNextOutput(int32 *cookie, media_output *output)
 {
-	//printf("ClientNode::GetNextOutput %d\n", *cookie);
-
 	JackPortList* ports = fOwner->GetOutputPorts();
 
 	if (*cookie >= ports->CountItems())
@@ -315,6 +313,8 @@ ClientNode::GetNextOutput(int32 *cookie, media_output *output)
 		return B_BAD_INDEX;
 
 	*output = *port->MediaOutput();
+
+	printf("ClientNode::GetNextOutput %d %s\n", *cookie, port->Name());
 
 	*cookie += 1;
 
@@ -377,7 +377,7 @@ ClientNode::PrepareToConnect(const media_source &src,
 			if (port->IsConnected())
 				return B_MEDIA_ALREADY_CONNECTED;
 
-			*out_source = src;
+			*out_source = output->source;
 
 			BString portName(jack_port_name((jack_port_t*) port));
 			portName.CopyInto(name, 0, portName.Length());
@@ -529,13 +529,14 @@ ClientNode::HandleEvent(const media_timed_event *event,
 			printf("BTimedEventQueue::B_START\n");
 			if (RunState() != B_STARTED) {
 				fFramesSent = 0;
-				fTime = TimeSource()->RealTime();
-				int period = (fOwner->GetOutputPorts()->CountItems())*3;
+				int period = ((fOwner->GetOutputPorts()->CountItems())*2);
 				fBufferGroup = new BBufferGroup(fFormat.u.raw_audio.buffer_size,
 					period);
 
 				if (fBufferGroup->InitCheck() != B_OK)
 					printf("error\n");
+
+				fTime = event->event_time;
 
 				bigtime_t start = ::system_time();
 				ComputeCycle();
@@ -549,16 +550,10 @@ ClientNode::HandleEvent(const media_timed_event *event,
 					port->CurrentBuffer()->Recycle();
 				}
 
-				int sample_size = (fFormat.u.raw_audio.format & 0xf)*
-					fFormat.u.raw_audio.channel_count;
-
-				bigtime_t duration = bigtime_t(1000000) * fOwner->BufferSize() /
-				bigtime_t(fFormat.u.raw_audio.frame_rate);
-
+				bigtime_t duration = bigtime_t(1000000LL * fOwner->BufferSize()) /
+					int32(fFormat.u.raw_audio.frame_rate);
 				SetBufferDuration(duration);
-
 				SetEventLatency(fDownstreamLatency + fProcessLatency);
-
 				_ScheduleOutputEvent(fTime);
 			}
 			break;
@@ -584,14 +579,26 @@ ClientNode::HandleEvent(const media_timed_event *event,
 
 		case NEW_BUFFER_EVENT:
 		{
+			if (RunState() != B_STARTED)
+				return;
+
+			if (late > (BufferDuration() / 3) ) {
+				printf("ClientNode::HandleEvent::NEW_BUFFER_EVENT, event"
+					"scheduled much too late, lateness is %"
+					B_PRId64 "\n", late);
+			}
 			ComputeCycle();
 			_DataAvailable(event->event_time);
 
-			// Now we schedule the next event
-			bigtime_t nextEvent = fTime + bigtime_t((1000000LL * fFramesSent)
-				/ (int32)fFormat.u.raw_audio.frame_rate)+EventLatency();
-			_ScheduleOutputEvent(nextEvent);
+			int64 samples = fFormat.u.raw_audio.buffer_size
+				/ ((fFormat.u.raw_audio.format
+				& media_raw_audio_format::B_AUDIO_SIZE_MASK));
+			fFramesSent += samples;
 
+			// Now we schedule the next event
+			bigtime_t nextEvent = fTime + bigtime_t((1000000LL * double(fFramesSent))
+				/ double(fFormat.u.raw_audio.frame_rate));
+			_ScheduleOutputEvent(nextEvent);
 			break;
 		}
 
@@ -615,6 +622,8 @@ ClientNode::ComputeCycle()
 
 	// Let the process init
 	fOwner->Process(fOwner->BufferSize());
+
+	return B_OK;
 }
 
 
@@ -646,17 +655,13 @@ ClientNode::_InitOutputPorts()
 void
 ClientNode::_DataAvailable(bigtime_t time)
 {
-	size_t samples = fFormat.u.raw_audio.buffer_size / sizeof(float);
-	fFramesSent += samples;
-
 	JackPortList* ports = fOwner->GetOutputPorts();
 	for (int i = 0; i < ports->CountItems(); i++) {
 		JackPort* port = ports->ItemAt(i);
 		if (port != NULL && port->IsConnected()) {
 
 			BBuffer* buffer = FillNextBuffer(time, port);
-
-			if (buffer) {
+			if (buffer != NULL) {
 				if (SendBuffer(buffer,
 					port->MediaOutput()->source, port->MediaOutput()->destination)
 					!= B_OK) {
@@ -665,14 +670,8 @@ ClientNode::_DataAvailable(bigtime_t time)
 						"failed\n");
 					buffer->Recycle();
 				}
-				size_t nFrames = fFormat.u.raw_audio.buffer_size
-					/ ((fFormat.u.raw_audio.format
-					& media_raw_audio_format::B_AUDIO_SIZE_MASK)
-					* fFormat.u.raw_audio.channel_count);
-			}
-
-			if (buffer == NULL)
-				return;
+			} else
+				printf("Buffer is null!\n");
 		}
 	}
 }
@@ -682,23 +681,12 @@ BBuffer*
 ClientNode::FillNextBuffer(bigtime_t eventTime, JackPort* port)
 {
 	//printf("FillNextBuffer\n");
-
 	BBuffer* buffer = port->CurrentBuffer();
-
 	media_header* header = buffer->Header();
 	header->type = B_MEDIA_RAW_AUDIO;
 	header->size_used = fFormat.u.raw_audio.buffer_size;
 	header->time_source = TimeSource()->ID();
-
-	bigtime_t start;
-	if (RunMode() == B_RECORDING)
-		start = eventTime;
-	else
-		start = fTime + bigtime_t(double(fFramesSent) 
-			/ double(fFormat.u.raw_audio.frame_rate) * 1000000.0);
-
-	header->start_time = start;
-
+	header->start_time = eventTime;
 	return buffer;
 }
 
@@ -707,8 +695,8 @@ status_t
 ClientNode::_ScheduleOutputEvent(bigtime_t event)
 {
 	media_timed_event nextBufferEvent(event, NEW_BUFFER_EVENT);
-
 	EventQueue()->AddEvent(nextBufferEvent);
+	return B_OK;
 }
 
 
@@ -723,4 +711,5 @@ ClientNode::_FindOutputPort(media_source source, media_destination dest) const
 			port->MediaOutput()->destination)
 				return port;
 	}
+	return NULL;
 }

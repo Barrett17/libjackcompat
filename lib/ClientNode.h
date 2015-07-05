@@ -138,7 +138,7 @@ private:
 				bigtime_t	 fLastLateness;
 
 				bigtime_t	 fTime;
-				size_t		 fFramesSent;
+				int64		 fFramesSent;
 
 				BBufferGroup*	fBufferGroup;
 };
