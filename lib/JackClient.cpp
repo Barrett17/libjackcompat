@@ -63,8 +63,6 @@ JackClient::JackClient(const char* client_name,
 	fInputPorts = new JackPortList(true);
 	fOutputPorts = new JackPortList(true);
 
-	fLock = new BLocker("JackClient lock");
-
 	fRoster = BMediaRoster::Roster();
 	fClientNode = NULL;
 	fActivated = false;
@@ -79,7 +77,6 @@ JackClient::~JackClient()
 
 	delete fInputPorts;
 	delete fOutputPorts;
-	delete fLock;
 }
 
 
@@ -107,8 +104,6 @@ JackClient::SampleRate() const
 int
 JackClient::Open()
 {
-	BAutolock _(fLock);
-
 	printf("JackClient::Open\n");
 
 	if (fClientNode != NULL)
@@ -138,8 +133,6 @@ JackClient::Open()
 int
 JackClient::Close()
 {
-	BAutolock _(fLock);
-
 	printf("JackClient::Close\n");
 
 	if (fClientNode != NULL
@@ -159,8 +152,6 @@ JackClient::Close()
 status_t
 JackClient::ActivateNode()
 {
-	BAutolock _(fLock);
-
 	printf("JackClient::ActivateNode\n");
 
 	if (!fClientNode->TimeSource()->IsRunning()) {
@@ -183,8 +174,6 @@ JackClient::ActivateNode()
 int
 JackClient::Activate()
 {
-	BAutolock _(fLock);
-
 	printf("JackClient::Activate\n");
 	if (!fOpen)
 		return -1;
@@ -208,8 +197,6 @@ JackClient::Activate()
 int
 JackClient::DeActivate()
 {
-	BAutolock _(fLock);
-
 	printf("JackClient::DeActivate\n");
 	if (fActivated == false)
 		return 0;
@@ -240,8 +227,6 @@ JackClient::RegisterPort(const char *port_name,
 	const char *port_type, unsigned long flags,
 	unsigned long buffer_size)
 {
-	BAutolock _(fLock);
-
 	unsigned long size;
 
 	if (buffer_size == 0) {
@@ -352,8 +337,6 @@ const char**
 JackClient::GetPorts(const char *port_name_pattern, 
 	const char *type_name_pattern, unsigned long flags)
 {
-	BAutolock _(fLock);
-
 	const char** jack_ports;
 	jack_ports = (const char**)malloc(100);
 
@@ -390,7 +373,6 @@ JackClient::GetPorts(const char *port_name_pattern,
 status_t
 JackClient::Process(jack_nframes_t size)
 {
-	BAutolock _(fLock);
 	if (fOpen == false || fActivated == false)
 		return B_ERROR;
 
@@ -402,8 +384,6 @@ JackClient::Process(jack_nframes_t size)
 int
 JackClient::ConnectPorts(const char* source, const char* destination)
 {
-	BAutolock _(fLock);
-
 	media_node sourceNode = FindNativeNode(source);
 	media_node destNode = FindNativeNode(destination);
 
@@ -474,8 +454,6 @@ JackClient::IsEqual(JackClient* client) const
 bool
 JackClient::PortsReady() const
 {
-	BAutolock _(fLock);
-
 	if(!fOpen && !fActivated)
 		return false;
 

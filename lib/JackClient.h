@@ -124,7 +124,6 @@ private:
 	jack_status_t*		fStatus;
 
 	// wrap implementation internals
-	BLocker*			fLock;
 	const char*			fName;
 	bool				fOpen;
 	bool 				fActivated;
