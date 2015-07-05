@@ -107,7 +107,7 @@ JackClient::Open()
 	printf("JackClient::Open\n");
 
 	if (fClientNode != NULL)
-		delete fClientNode;
+		return -1;
 
 	fClientNode = new ClientNode(fName, this);
 
