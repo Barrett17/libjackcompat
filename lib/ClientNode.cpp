@@ -529,7 +529,7 @@ ClientNode::HandleEvent(const media_timed_event *event,
 			printf("BTimedEventQueue::B_START\n");
 			if (RunState() != B_STARTED) {
 				fFramesSent = 0;
-				int period = ((fOwner->GetOutputPorts()->CountItems())*2);
+				int period = (fOwner->GetOutputPorts()->CountItems()*2);
 				fBufferGroup = new BBufferGroup(fFormat.u.raw_audio.buffer_size,
 					period);
 
@@ -555,6 +555,7 @@ ClientNode::HandleEvent(const media_timed_event *event,
 				SetBufferDuration(duration);
 				SetEventLatency(fDownstreamLatency + fProcessLatency);
 				_ScheduleOutputEvent(fTime);
+				printf("The start event has been scheduled\n");
 			}
 			break;
 		}
@@ -584,7 +585,7 @@ ClientNode::HandleEvent(const media_timed_event *event,
 
 			if (late > (BufferDuration() / 3) ) {
 				printf("ClientNode::HandleEvent::NEW_BUFFER_EVENT, event"
-					"scheduled much too late, lateness is %"
+					" scheduled much too late, lateness is %"
 					B_PRId64 "\n", late);
 			}
 			ComputeCycle();
@@ -597,7 +598,7 @@ ClientNode::HandleEvent(const media_timed_event *event,
 
 			// Now we schedule the next event
 			bigtime_t nextEvent = fTime + bigtime_t((1000000LL * double(fFramesSent))
-				/ double(fFormat.u.raw_audio.frame_rate));
+				/ int32(fFormat.u.raw_audio.frame_rate));
 			_ScheduleOutputEvent(nextEvent);
 			break;
 		}

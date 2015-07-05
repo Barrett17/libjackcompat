@@ -37,8 +37,8 @@ typedef BObjectList<JackPort> JackPortList;
 
 template <class T>
 struct CallbackContainer {
-	T callback;
-	void* arg;
+	T callback = 0;
+	void* arg = NULL;
 };
 
 class JackClient

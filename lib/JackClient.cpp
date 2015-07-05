@@ -43,7 +43,7 @@ JackClient::ProcessThread(void* cookie)
 			snooze(10000);
 
 		if (client->CountPorts() != 0
-			|| client->PortsReady()) {
+			&& client->PortsReady()) {
 			printf("The client is starting now\n");
 			client->ActivateNode();
 			return 0;
@@ -74,11 +74,8 @@ JackClient::JackClient(const char* client_name,
 
 JackClient::~JackClient()
 {
-	if (fActivated)
-		DeActivate();
-
-	if (fOpen)
-		Close();
+	if (fShutdownCallback.callback != 0)
+		fShutdownCallback.callback(fShutdownCallback.arg);
 
 	delete fInputPorts;
 	delete fOutputPorts;
