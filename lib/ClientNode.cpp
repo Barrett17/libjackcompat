@@ -544,11 +544,6 @@ ClientNode::HandleEvent(const media_timed_event *event,
 				fProcessLatency = produceLatency - start;
 
 				printf("Estimated latency is %Ld\n", fProcessLatency);
-				JackPortList* outputPorts = fOwner->GetOutputPorts();
-				for (int i = 0; i < outputPorts->CountItems(); i++) {
-					JackPort* port = outputPorts->ItemAt(i);
-					port->CurrentBuffer()->Recycle();
-				}
 
 				bigtime_t duration = bigtime_t(1000000LL * fOwner->BufferSize()) /
 					int32(fFormat.u.raw_audio.frame_rate);
@@ -588,9 +583,14 @@ ClientNode::HandleEvent(const media_timed_event *event,
 					" scheduled much too late, lateness is %"
 					B_PRId64 "\n", late);
 			}
-			ComputeCycle();
-			_DataAvailable(event->event_time);
 
+			// The first cycle is always computed
+			// in the B_START event, so we skip it
+			// at the first time.
+			if (fFramesSent > 0)
+				ComputeCycle();
+
+			_DataAvailable(event->event_time);
 			int64 samples = fFormat.u.raw_audio.buffer_size
 				/ ((fFormat.u.raw_audio.format
 				& media_raw_audio_format::B_AUDIO_SIZE_MASK));
