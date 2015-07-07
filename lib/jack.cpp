@@ -111,7 +111,6 @@ jack_client_close (jack_client_t *cl)
 
 	int ret = client->Close();
 	delete client;
-	cl = NULL;
 	return ret;
 }
 

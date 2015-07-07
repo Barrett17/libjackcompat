@@ -339,6 +339,16 @@ ClientNode::SetBufferGroup(const media_source &src,
 	if (src.port != ControlPort() || src.id != 0)
 		return B_MEDIA_BAD_SOURCE;
 
+	if (group == fBufferGroup)
+		return B_OK;
+
+	delete fBufferGroup;
+
+	if (group != NULL) {
+		fBufferGroup = group;
+		return B_OK;
+	}
+
 	fBufferGroup = group;
 
 	return B_OK;
@@ -539,7 +549,10 @@ ClientNode::HandleEvent(const media_timed_event *event,
 				fTime = event->event_time;
 
 				bigtime_t start = ::system_time();
-				ComputeCycle();
+				if (ComputeCycle() == B_ERROR) {
+					printf("Error with first ComputeCycle.\n");
+					return;
+				}
 				bigtime_t produceLatency = ::system_time();
 				fProcessLatency = produceLatency - start;
 
@@ -587,8 +600,12 @@ ClientNode::HandleEvent(const media_timed_event *event,
 			// The first cycle is always computed
 			// in the B_START event, so we skip it
 			// at the first time.
-			if (fFramesSent > 0)
-				ComputeCycle();
+			if (fFramesSent > 0) {
+				if (ComputeCycle() == B_ERROR) {
+					printf("Error with ComputeCycle.\n");
+					return;
+				}
+			}
 
 			_DataAvailable(event->event_time);
 			int64 samples = fFormat.u.raw_audio.buffer_size
