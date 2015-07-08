@@ -19,7 +19,85 @@
 
 #include "jack/transport.h"
 
-jack_transport_state_t jack_transport_query (const jack_client_t *client,
-					     jack_position_t *pos)
+
+int
+jack_release_timebase(jack_client_t* client) 
+{
+	return -1;
+}
+
+
+int
+jack_set_sync_callback(jack_client_t* client, JackSyncCallback callback,
+	void* cookie)
+{
+	return -1;
+}
+
+
+int
+jack_set_sync_timeout(jack_client_t* client, jack_time_t timeout)
+{
+	return -1;
+}
+
+
+int
+jack_set_timebase_callback(jack_client_t* client, int conditional,
+	JackTimebaseCallback callback, void* cookie)
+{
+	return -1;
+}
+
+
+int
+jack_transport_locate(jack_client_t* client, jack_nframes_t frame)
+{
+	return -1;
+}
+
+
+jack_transport_state_t
+jack_transport_query(const jack_client_t* client, jack_position_t* position)
+{
+	return -1;
+}
+
+
+jack_nframes_t
+jack_get_current_transport_frame(const jack_client_t* client)
+{
+	return -1;
+}
+
+
+int
+jack_transport_reposition(jack_client_t* client,
+	const jack_position_t* position) 
+{
+	return -1;
+}
+
+
+void
+jack_transport_start(jack_client_t* client) 
+{
+}
+
+
+void
+jack_transport_stop(jack_client_t* client) 
+{
+}
+
+
+void
+jack_get_transport_info(jack_client_t* client, jack_transport_info_t* info) 
+{
+}
+
+
+void
+jack_set_transport_info(jack_client_t* client, jack_transport_info_t* info) 
 {
 }
