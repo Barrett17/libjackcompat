@@ -13,6 +13,7 @@ AddOn libjackcompat.so :
 	ringbuffer.c
 	session.c
 	transport.c
+	thread.c
 
 	ClientNode.cpp
 	JackClient.cpp
