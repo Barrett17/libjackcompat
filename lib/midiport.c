@@ -1,5 +1,5 @@
 /*
-    Copyright 2013 Dario Casalinuovo. All rights reserved.
+    Copyright 2013-2015 Dario Casalinuovo. All rights reserved.
 
     This file is part of libjackcompat.
 
