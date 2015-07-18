@@ -19,10 +19,13 @@
 
 #include "jack/thread.h"
 
+#include "WrapperDefs.h"
+
 
 int
 jack_client_real_time_priority(jack_client_t* client)
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -31,6 +34,7 @@ jack_client_real_time_priority(jack_client_t* client)
 int
 jack_client_max_real_time_priority(jack_client_t* client)
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -38,6 +42,7 @@ jack_client_max_real_time_priority(jack_client_t* client)
 int
 jack_acquire_real_time_scheduling(jack_native_thread_t thread, int priority)
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -47,6 +52,7 @@ jack_client_create_thread(jack_client_t* client,
 	jack_native_thread_t* thread, int priority, int realtime,
 	void* (*start_routine)(void*), void* arg)
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -54,6 +60,7 @@ jack_client_create_thread(jack_client_t* client,
 int
 jack_drop_real_time_scheduling(jack_native_thread_t thread)
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -61,6 +68,7 @@ jack_drop_real_time_scheduling(jack_native_thread_t thread)
 int
 jack_client_stop_thread(jack_client_t* client, jack_native_thread_t thread)
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -68,6 +76,7 @@ jack_client_stop_thread(jack_client_t* client, jack_native_thread_t thread)
 int
 jack_client_kill_thread(jack_client_t* client, jack_native_thread_t thread)
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -75,4 +84,5 @@ jack_client_kill_thread(jack_client_t* client, jack_native_thread_t thread)
 void
 jack_set_thread_creator(jack_thread_creator_t creator)
 {
+	UNIMPLEMENTED();
 }

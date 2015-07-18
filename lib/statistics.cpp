@@ -19,10 +19,13 @@
 
 #include "jack/statistics.h"
 
+#include "WrapperDefs.h"
+
 
 LIB_EXPORT float
 jack_get_xrun_delayed_usecs(jack_client_t* client)
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -30,6 +33,7 @@ jack_get_xrun_delayed_usecs(jack_client_t* client)
 LIB_EXPORT float
 jack_get_max_delayed_usecs(jack_client_t* client)
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -37,5 +41,5 @@ jack_get_max_delayed_usecs(jack_client_t* client)
 LIB_EXPORT void
 jack_reset_max_delayed_usecs(jack_client_t* client)
 {
-	return -1;
+	UNIMPLEMENTED();
 }

@@ -19,10 +19,13 @@
 
 #include "jack/transport.h"
 
+#include "WrapperDefs.h"
+
 
 int
 jack_release_timebase(jack_client_t* client) 
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -31,6 +34,7 @@ int
 jack_set_sync_callback(jack_client_t* client, JackSyncCallback callback,
 	void* cookie)
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -38,6 +42,7 @@ jack_set_sync_callback(jack_client_t* client, JackSyncCallback callback,
 int
 jack_set_sync_timeout(jack_client_t* client, jack_time_t timeout)
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -46,6 +51,7 @@ int
 jack_set_timebase_callback(jack_client_t* client, int conditional,
 	JackTimebaseCallback callback, void* cookie)
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -53,6 +59,7 @@ jack_set_timebase_callback(jack_client_t* client, int conditional,
 int
 jack_transport_locate(jack_client_t* client, jack_nframes_t frame)
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -60,6 +67,7 @@ jack_transport_locate(jack_client_t* client, jack_nframes_t frame)
 jack_transport_state_t
 jack_transport_query(const jack_client_t* client, jack_position_t* position)
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -67,6 +75,7 @@ jack_transport_query(const jack_client_t* client, jack_position_t* position)
 jack_nframes_t
 jack_get_current_transport_frame(const jack_client_t* client)
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -75,6 +84,7 @@ int
 jack_transport_reposition(jack_client_t* client,
 	const jack_position_t* position) 
 {
+	UNIMPLEMENTED();
 	return -1;
 }
 
@@ -82,22 +92,26 @@ jack_transport_reposition(jack_client_t* client,
 void
 jack_transport_start(jack_client_t* client) 
 {
+	UNIMPLEMENTED();
 }
 
 
 void
 jack_transport_stop(jack_client_t* client) 
 {
+	UNIMPLEMENTED();
 }
 
 
 void
 jack_get_transport_info(jack_client_t* client, jack_transport_info_t* info) 
 {
+	UNIMPLEMENTED();
 }
 
 
 void
 jack_set_transport_info(jack_client_t* client, jack_transport_info_t* info) 
 {
+	UNIMPLEMENTED();
 }

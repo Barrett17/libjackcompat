@@ -17,17 +17,16 @@
     along with libjackcompat.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "jack/jack.h"
+
 #include <ObjectList.h>
 
 #include <String.h>
 #include <MediaDefs.h>
 
-#include "WrapperDefs.h"
-
-#include "jack/jack.h"
-
 #include "JackClient.h"
 #include "JackPort.h"
+#include "WrapperDefs.h"
 
 #include <stdio.h>
 #include <stdlib.h>

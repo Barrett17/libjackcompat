@@ -25,13 +25,17 @@ jack_internal_client_load(jack_client_t* client,
 	const char* client_name, jack_options_t options,
 	jack_status_t* status, ...)
 {
+	UNIMPLEMENTED();
+	return -1;
 }
 
 
 LIB_EXPORT jack_status_t
 jack_internal_client_unload(jack_client_t* client,
-jack_intclient_t intclient)
+	jack_intclient_t intclient)
 {
+	UNIMPLEMENTED();
+	return -1;
 }
 
 
@@ -39,11 +43,15 @@ LIB_EXPORT char
 jack_get_internal_client_name(jack_client_t* client,
 	jack_intclient_t intclient)
 {
+	UNIMPLEMENTED();
+	return "";
 }
 
 
 LIB_EXPORT jack_intclient_t
-jack_internal_client_handle(jack_client_t* client,
+	jack_internal_client_handle(jack_client_t* client,
 	const char* client_name, jack_status_t* status)
 {
+	UNIMPLEMENTED();
+	return -1;
 }

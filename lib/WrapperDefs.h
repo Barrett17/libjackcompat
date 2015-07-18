@@ -20,6 +20,8 @@
 #ifndef _LIBJACKCOMPAT_DEFS_H_
 #define _LIBJACKCOMPAT_DEFS_H_
 
+#include "Debug.h"
+
 #define LIB_EXPORT __attribute__((visibility("default")))
 
 // Sizes constants
