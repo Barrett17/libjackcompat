@@ -22,7 +22,7 @@
 #include "WrapperDefs.h"
 
 
-int
+LIB_EXPORT int
 jack_release_timebase(jack_client_t* client) 
 {
 	UNIMPLEMENTED();
@@ -30,7 +30,7 @@ jack_release_timebase(jack_client_t* client)
 }
 
 
-int
+LIB_EXPORT int
 jack_set_sync_callback(jack_client_t* client, JackSyncCallback callback,
 	void* cookie)
 {
@@ -39,7 +39,7 @@ jack_set_sync_callback(jack_client_t* client, JackSyncCallback callback,
 }
 
 
-int
+LIB_EXPORT int
 jack_set_sync_timeout(jack_client_t* client, jack_time_t timeout)
 {
 	UNIMPLEMENTED();
@@ -47,7 +47,7 @@ jack_set_sync_timeout(jack_client_t* client, jack_time_t timeout)
 }
 
 
-int
+LIB_EXPORT int
 jack_set_timebase_callback(jack_client_t* client, int conditional,
 	JackTimebaseCallback callback, void* cookie)
 {
@@ -56,7 +56,7 @@ jack_set_timebase_callback(jack_client_t* client, int conditional,
 }
 
 
-int
+LIB_EXPORT int
 jack_transport_locate(jack_client_t* client, jack_nframes_t frame)
 {
 	UNIMPLEMENTED();
@@ -64,7 +64,7 @@ jack_transport_locate(jack_client_t* client, jack_nframes_t frame)
 }
 
 
-jack_transport_state_t
+LIB_EXPORT jack_transport_state_t
 jack_transport_query(const jack_client_t* client, jack_position_t* position)
 {
 	UNIMPLEMENTED();
@@ -72,7 +72,7 @@ jack_transport_query(const jack_client_t* client, jack_position_t* position)
 }
 
 
-jack_nframes_t
+LIB_EXPORT jack_nframes_t
 jack_get_current_transport_frame(const jack_client_t* client)
 {
 	UNIMPLEMENTED();
@@ -80,7 +80,7 @@ jack_get_current_transport_frame(const jack_client_t* client)
 }
 
 
-int
+LIB_EXPORT int
 jack_transport_reposition(jack_client_t* client,
 	const jack_position_t* position) 
 {
@@ -89,28 +89,28 @@ jack_transport_reposition(jack_client_t* client,
 }
 
 
-void
+LIB_EXPORT void
 jack_transport_start(jack_client_t* client) 
 {
 	UNIMPLEMENTED();
 }
 
 
-void
+LIB_EXPORT void
 jack_transport_stop(jack_client_t* client) 
 {
 	UNIMPLEMENTED();
 }
 
 
-void
+LIB_EXPORT void
 jack_get_transport_info(jack_client_t* client, jack_transport_info_t* info) 
 {
 	UNIMPLEMENTED();
 }
 
 
-void
+LIB_EXPORT void
 jack_set_transport_info(jack_client_t* client, jack_transport_info_t* info) 
 {
 	UNIMPLEMENTED();

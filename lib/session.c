@@ -22,7 +22,7 @@
 #include "WrapperDefs.h"
 
 
-int
+LIB_EXPORT int
 jack_set_session_callback(jack_client_t* client,
 	JackSessionCallback callback, void* cookie)
 {
@@ -31,7 +31,7 @@ jack_set_session_callback(jack_client_t* client,
 }
 
 
-int
+LIB_EXPORT int
 jack_session_reply(jack_client_t* client,
 	jack_session_event_t* event)
 {
@@ -40,14 +40,14 @@ jack_session_reply(jack_client_t* client,
 }
 
 
-void
+LIB_EXPORT void
 jack_session_event_free(jack_session_event_t* event)
 {
 	UNIMPLEMENTED();
 }
 
 
-char
+LIB_EXPORT char
 jack_client_get_uuid(jack_client_t* client)
 {
 	UNIMPLEMENTED();
@@ -55,7 +55,7 @@ jack_client_get_uuid(jack_client_t* client)
 }
 
 
-jack_session_command_t*
+LIB_EXPORT jack_session_command_t*
 jack_session_notify(jack_client_t* client, const char* target,
 	jack_session_event_type_t type, const char* path)
 {
@@ -64,14 +64,14 @@ jack_session_notify(jack_client_t* client, const char* target,
 }
 
 
-void
+LIB_EXPORT void
 jack_session_commands_free(jack_session_command_t* commands)
 {
 	UNIMPLEMENTED();
 }
 
 
-char
+LIB_EXPORT char
 jack_get_uuid_for_client_name(jack_client_t* client, const char* name)
 {
 	UNIMPLEMENTED();
@@ -79,7 +79,7 @@ jack_get_uuid_for_client_name(jack_client_t* client, const char* name)
 }
 
 
-char
+LIB_EXPORT char
 jack_get_client_name_by_uuid(jack_client_t* client, const char* uuid)
 {
 	UNIMPLEMENTED();
@@ -87,7 +87,7 @@ jack_get_client_name_by_uuid(jack_client_t* client, const char* uuid)
 }
 
 
-int
+LIB_EXPORT int
 jack_reserve_client_name(jack_client_t* client,
 	const char* name, const char* uuid)
 {
@@ -96,7 +96,7 @@ jack_reserve_client_name(jack_client_t* client,
 }
 
 
-int
+LIB_EXPORT int
 jack_client_has_session_callback(jack_client_t* client, const char* name)
 {
 	UNIMPLEMENTED();
