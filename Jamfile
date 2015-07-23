@@ -9,11 +9,11 @@ SEARCH_SOURCE += [ FDirName $(TOP) clients ] ;
 
 AddOn libjackcompat.so :
 	jack.cpp
-	midiport.c
-	ringbuffer.c
-	session.c
-	transport.c
-	thread.c
+	midiport.cpp
+	ringbuffer.cpp
+	session.cpp
+	transport.cpp
+	thread.cpp
 
 	ClientNode.cpp
 	JackClient.cpp
